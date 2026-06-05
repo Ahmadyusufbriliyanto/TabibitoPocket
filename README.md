@@ -12,10 +12,10 @@ DELETE (Penghapusan Device)
 TEMA: Aurora Glassmorphism dengan nuansa futuristik gelap (Dark Indigo & Cyan)
 
 FITUR LENGKAP
-✅ CREATE (POST) - Tambah gear/device baru dengan form input dinamis;
-✅ READ (GET) - Tampilkan daftar 15 perangkat bawaan awal dari API;
-✅ UPDATE (PUT) - Edit data perangkat yang sudah ada di dalam rak;
-✅ DELETE (DELETE) - Hapus perangkat dari sistem dengan konfirmasi keamanan;
+✅ CREATE (POST) - Tambah gear/device baru dengan form input dinamis
+✅ READ (GET) - Tampilkan daftar 15 perangkat bawaan awal dari API
+✅ UPDATE (PUT) - Edit data perangkat yang sudah ada di dalam rak
+✅ DELETE (DELETE) - Hapus perangkat dari sistem dengan konfirmasi keamanan
 
 KEUNGGULAN APLIKASI
 🎨 Desain modern "Aurora Glassmorphism" (Efek kaca buram & cahaya neon)
