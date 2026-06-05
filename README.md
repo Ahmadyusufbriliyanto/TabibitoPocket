@@ -13,26 +13,39 @@ TEMA: Aurora Glassmorphism dengan nuansa futuristik gelap (Dark Indigo & Cyan)
 
 FITUR LENGKAP
 ✅ CREATE (POST) - Tambah gear/device baru dengan form input dinamis
+
 ✅ READ (GET) - Tampilkan daftar 15 perangkat bawaan awal dari API
+
 ✅ UPDATE (PUT) - Edit data perangkat yang sudah ada di dalam rak
+
 ✅ DELETE (DELETE) - Hapus perangkat dari sistem dengan konfirmasi keamanan
 
 KEUNGGULAN APLIKASI
+
 🎨 Desain modern "Aurora Glassmorphism" (Efek kaca buram & cahaya neon)
+
 📊 Panel Statistik Real-Time (Total aset perangkat & kalkulasi nilai Rupiah)
+
 📱 Layout Full-Dashboard yang responsif untuk berbagai ukuran layar
+
 ⚠️ UI Error Alert terintegrasi (Error tampil langsung di layar antarmuka web)
+
 ✨ Animasi halus pada transisi hover kartu dan notifikasi
+
 🔔 Toast notification untuk feedback aksi pengguna (Sukses/Gagal)
+
 💰 Format nominal angka otomatis ke mata uang Rupiah (IDR)
-🛡️ Proteksi keamanan lapis depan terhadap XSS (escape HTML)
+
 ⚡ Loading state indicator saat sinkronisasi server
 
 TEKNOLOGI YANG DIGUNAKAN
 
 HTML5 (Semantic Structure)
+
 CSS3 (Backdrop-filter Blur, Grid/Flexbox, Custom Properties, Keyframe Animations)
+
 JavaScript ES6+ (Strict async/await, Fetch API, DOM Manipulation)
+
 DummyJSON API (Mock REST API untuk simulasi server)
 
 CARA MENJALANKAN
