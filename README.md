@@ -1,17 +1,23 @@
 # TabibitoPocket
 TABIBITO POCKET
+
 Modern IT Inventory Dashboard
 
 DESKRIPSI
+
 Aplikasi Single Page Application (SPA) untuk mengelola data inventaris perangkat IT, gadget laboratorium, dan komponen PC mahasiswa Informatika. Aplikasi ini berinteraksi penuh dengan DummyJSON API menggunakan metode HTTP:
 
+
 POST (Pendaftaran Device Baru)
+
 PUT (Modifikasi Parameter Device)
+
 DELETE (Penghapusan Device)
 
 TEMA: Aurora Glassmorphism dengan nuansa futuristik gelap (Dark Indigo & Cyan)
 
 FITUR LENGKAP
+
 ✅ CREATE (POST) - Tambah gear/device baru dengan form input dinamis
 
 ✅ READ (GET) - Tampilkan daftar 15 perangkat bawaan awal dari API
@@ -79,24 +85,44 @@ CARA PENGGUNAAN
 - Baris perangkat akan musnah dari layar dashboard
 
 PALET WARNA (Aurora Glassmorphism)
+
+
 Background Core: #0f111a (Deep Space Dark)
+
 Glass Effect: rgba(255, 255, 255, 0.03) dengan Blur 16px
+
 Accent Primary: #6366f1 (Indigo Neon)
+
 Accent Highlight: #38bdf8 (Cyan Glow)
+
 Success UI: #10b981 (Emerald Green)
+
 Danger/Error UI: #ef4444 (Crimson Red)
 
+
 STRUKTUR FILE
+
+
 index.html  - Kerangka utama dashboard UI
+
 style.css   - Styling elemen, grid, dan efek aurora background
+
 script.js   - Logika utama CRUD SPA, Fetch API, & Error Handling
+
 README.md   - Dokumentasi & Panduan Aplikasi
 
+
 CATATAN PENTING (SESUAI KETENTUAN PRAKTIKUM)
+
+
 Seluruh kode wajib mematuhi aturan manipulasi DOM murni (tanpa reload/refresh halaman).
+
 DummyJSON adalah mock API, penambahan/penghapusan tidak tersimpan permanen di database mereka.
+
 Refresh halaman (F5) akan mengembalikan repositori ke 15 data bawaan awal.
+
 Semua request HTTP (POST, PUT, DELETE) menggunakan "async/await" (tidak menggunakan .then).
+
 Proteksi kode dilapisi "try...catch". Jika request gagal (simulasi offline/salah URL), sistem akan memunculkan banner Error merah di layar antarmuka, bukan sekadar di console.log.
 
 BROWSER SUPPORT
@@ -104,5 +130,3 @@ BROWSER SUPPORT
 ✅ Firefox (Versi 88+)
 ✅ Edge (Versi 90+)
 ✅ Safari (Versi 14+)
-
-Tema: Tabibito Pocket - Aurora Glassmorphism
