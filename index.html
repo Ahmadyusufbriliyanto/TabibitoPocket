@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabibito Pocket | Modern IT Inventory</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="aurora-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <div id="error-container" class="glass-alert danger" style="display: none;">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+                <strong>System Error:</strong>
+                <span id="error-message">Failed to connect to API.</span>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <aside class="left-panel">
+                <header class="app-header">
+                    <div class="logo">⚡</div>
+                    <div>
+                        <h1>Tabibito Pocket</h1>
+                        <p>IT Gear Workspace</p>
+                    </div>
+                </header>
+
+                <div class="stats-container">
+                    <div class="glass-stat">
+                        <p>Total Assets</p>
+                        <h3 id="total-devices">0</h3>
+                    </div>
+                    <div class="glass-stat">
+                        <p>Total Value</p>
+                        <h3 id="total-value" class="highlight">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card form-section">
+                    <div class="card-header">
+                        <h2 id="form-title">Tambahkan Gear Baru</h2>
+                    </div>
+                    
+                    <form id="device-form">
+                        <input type="hidden" id="device-id">
+                        
+                        <div class="input-wrapper">
+                            <input type="text" id="device-name" required placeholder=" ">
+                            <label>Nama Perangkat (cth: RTX 4090)</label>
+                        </div>
+
+                        <div class="input-wrapper">
+                            <input type="number" id="device-price" required placeholder=" ">
+                            <label>Harga (Rupiah)</label>
+                        </div>
+
+                        <div class="input-wrapper">
+                            <input type="text" id="device-category" placeholder=" ">
+                            <label>Kategori (cth: Komponen PC)</label>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" id="submit-btn" class="btn-primary">Simpan Data</button>
+                            <button type="button" id="cancel-btn" class="btn-secondary" style="display: none;">Batal Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+
+            <main class="right-panel">
+                <div class="glass-card list-section">
+                    <div class="list-header">
+                        <h2>Daftar Inventaris</h2>
+                    </div>
+                    
+                    <div id="inventory-list" class="inventory-scroll-area">
+                        <div class="empty-state">
+                            <div class="loader"></div>
+                            <p>Sinkronisasi data server...</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Data tersimpan!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
