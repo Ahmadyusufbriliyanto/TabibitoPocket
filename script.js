@@ -1,28 +1,31 @@
 const API_URL = 'https://dummyjson.com/products';
 
-let products = [];
+let inventory = [];
 let editingId = null;
 
 // Mengambil Elemen DOM
-const form = document.getElementById('product-form');
-const nameInput = document.getElementById('product-name');
-const priceInput = document.getElementById('product-price');
-const categoryInput = document.getElementById('product-category');
-const idInput = document.getElementById('product-id');
-const listContainer = document.getElementById('product-list');
+const form = document.getElementById('device-form');
+const nameInput = document.getElementById('device-name');
+const priceInput = document.getElementById('device-price');
+const categoryInput = document.getElementById('device-category');
+const idInput = document.getElementById('device-id');
+const listContainer = document.getElementById('inventory-list');
 const submitBtn = document.getElementById('submit-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const formTitle = document.getElementById('form-title');
 
-// Elemen Error UI (Sesuai Ketentuan C)
+const statTotalDevices = document.getElementById('total-devices');
+const statTotalValue = document.getElementById('total-value');
+
+// Elemen Error UI
 const errorContainer = document.getElementById('error-container');
 const errorMessage = document.getElementById('error-message');
 const toastEl = document.getElementById('toast');
 
-// --- FUNGSI BANTUAN UI ---
+// --- HELPER FUNCTIONS ---
 function showUIError(msg) {
     errorMessage.textContent = msg;
-    errorContainer.style.display = 'block';
+    errorContainer.style.display = 'flex';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -30,26 +33,41 @@ function hideUIError() {
     errorContainer.style.display = 'none';
 }
 
-function showToast(msg) {
-    if (!toastEl) return;
+function showToast(msg, isError = false) {
     toastEl.textContent = msg;
-    toastEl.classList.add('show');
+    toastEl.className = `toast show ${isError ? 'error' : ''}`;
     setTimeout(() => toastEl.classList.remove('show'), 3000);
 }
 
-// --- 1. GET DATA (READ) ---
-async function fetchProducts() {
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(angka);
+}
+
+// --- 1. GET DATA AWAL (DARI API ASLI) ---
+async function fetchDevices() {
     try {
-        const response = await fetch(`${API_URL}?limit=10`);
+        const response = await fetch(`${API_URL}?limit=30`);
         if (!response.ok) throw new Error("Gagal mengambil data dari API DummyJSON.");
         
         const data = await response.json();
-        // Menggunakan data asli dari server DummyJSON
-        products = data.products; 
+        
+        // Memetakan data asli dari API masuk ke dalam array inventory
+        // Dikalikan 16000 untuk konversi USD ke perkiraan Rupiah
+        inventory = data.products.map(product => ({
+            id: product.id,
+            title: product.title,
+            price: Math.round(product.price * 16000), 
+            category: product.category
+        }));
+
         renderDOM();
     } catch (error) {
         showUIError(error.message);
-        listContainer.innerHTML = `<div class="empty-state"><p>Gagal memuat data produk.</p></div>`;
+        listContainer.innerHTML = `<div class="empty-state"><p>Gagal memuat data inventaris dari API.</p></div>`;
     }
 }
 
@@ -60,93 +78,102 @@ async function handleFormSubmit(e) {
 
     const payload = {
         title: nameInput.value.trim(),
-        price: parseFloat(priceInput.value),
-        category: categoryInput.value.trim() || 'General'
+        price: parseInt(priceInput.value, 10),
+        category: categoryInput.value.trim() || 'Aksesoris IT'
     };
 
     try {
         if (editingId) {
-            // METODE: PUT (Sesuai Ketentuan A)
-            const response = await fetch(`${API_URL}/${editingId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) throw new Error("Gagal menyimpan perubahan ke server.");
-            
-            const updatedProduct = await response.json();
+            // Pengaman: Hanya kirim PUT ke server jika ID milik API asli (ID <= 100)
+            if (editingId <= 100) {
+                const response = await fetch(`${API_URL}/${editingId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error("Gagal menyimpan perubahan ke server.");
+                await response.json(); 
+            }
 
-            // Manipulasi DOM (Sesuai Ketentuan B: Tanpa Reload)
-            products = products.map(item => item.id === editingId ? { ...item, ...payload } : item);
-            showToast("Produk berhasil diperbarui!");
+            // Selalu perbarui state lokal agar UI berubah secara real-time
+            inventory = inventory.map(item => item.id === editingId ? { ...item, ...payload } : item);
+            showToast("Perubahan parameter hardware berhasil disimpan.");
             resetForm();
         } else {
-            // METODE: POST (Sesuai Ketentuan A)
+            // Logika POST ke API untuk simulasi penambahan data baru
             const response = await fetch(`${API_URL}/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) throw new Error("Gagal menambahkan produk baru ke sistem.");
+            if (!response.ok) throw new Error("Gagal mendaftarkan device baru ke sistem.");
+            await response.json();
 
-            const newProduct = await response.json();
+            // ID menggunakan berbasis waktu (Date.now()) untuk entri data lokal baru
+            const newDevice = {
+                id: Date.now(), 
+                title: payload.title,
+                price: payload.price,
+                category: payload.category
+            };
 
-            // Penyesuaian karena DummyJSON mock API sering mengembalikan ID yang sama untuk POST baru
-            newProduct.id = Date.now(); 
-
-            // Manipulasi DOM (Sesuai Ketentuan B: Tanpa Reload)
-            products.unshift(newProduct); 
-            showToast("Produk baru berhasil ditambahkan!");
+            inventory.unshift(newDevice); 
+            showToast("Gear baru berhasil ditambahkan ke inventaris!");
             resetForm();
         }
         renderDOM();
     } catch (error) {
-        // Sesuai Ketentuan C: Tampil di layar web
         showUIError(error.message);
     }
 }
 
 // --- 3. DELETE DATA ---
-async function deleteProduct(id, title) {
-    if (!confirm(`Yakin ingin menghapus produk "${title}"?`)) return;
+async function deleteDevice(id, title) {
+    if (!confirm(`Yakin ingin menghapus perangkat [ ${title} ] dari sistem?`)) return;
     hideUIError();
 
     try {
-        // METODE: DELETE (Sesuai Ketentuan A)
-        const response = await fetch(`${API_URL}/${id}`, { 
-            method: 'DELETE' 
-        });
-        if (!response.ok) throw new Error(`Gagal menghapus data ID: ${id} dari server.`);
+        // Pengaman: Hanya kirim DELETE ke server jika ID berasal dari API asli (ID <= 100)
+        if (id <= 100) {
+            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error(`Gagal menghapus data ID: ${id} dari server.`);
+            await response.json();
+        }
 
-        // Manipulasi DOM (Sesuai Ketentuan B: Tanpa Reload)
-        products = products.filter(item => item.id !== id);
+        // Hapus item dari array lokal (berlaku untuk ID bawaan maupun ID baru berbasis waktu)
+        inventory = inventory.filter(item => item.id !== id);
         renderDOM();
-        showToast("Produk berhasil dihapus.");
+        showToast("Device berhasil dihapus secara permanen.");
     } catch (error) {
-        // Sesuai Ketentuan C: Tampil di layar web
         showUIError(error.message);
     }
 }
 
-// --- 4. RENDER DOM DINAMIS ---
+// --- 4. RENDER DOM (MENGHINDARI RELOAD) ---
 function renderDOM() {
-    if (products.length === 0) {
-        listContainer.innerHTML = `<div class="empty-state"><p>Tidak ada produk yang tersedia.</p></div>`;
+    // Update Kalkulasi Statistik
+    statTotalDevices.textContent = inventory.length;
+    const total = inventory.reduce((sum, item) => sum + item.price, 0);
+    statTotalValue.textContent = formatRupiah(total);
+
+    // Update Daftar Inventaris di UI
+    if (inventory.length === 0) {
+        listContainer.innerHTML = `<div class="empty-state"><p>Inventaris laboratorium kosong.</p></div>`;
         return;
     }
 
-    listContainer.innerHTML = products.map(item => `
-        <div class="product-card" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h4 style="margin: 0 0 5px 0;">${escapeHtml(item.title)}</h4>
-                    <span style="font-size: 0.85em; background: #eee; padding: 2px 6px; border-radius: 4px;">${escapeHtml(item.category)}</span>
-                    <span style="font-weight: bold; color: #2563eb; margin-left: 10px;">$${item.price}</span>
+    listContainer.innerHTML = inventory.map(item => `
+        <div class="device-item">
+            <div class="device-info">
+                <h4>${escapeHtml(item.title)}</h4>
+                <div class="device-meta">
+                    <span class="badge-cat">${escapeHtml(item.category)}</span>
+                    <span class="device-price">${formatRupiah(item.price)}</span>
                 </div>
-                <div>
-                    <button onclick="prepareEdit(${item.id})" style="padding: 5px 10px; background: #f59e0b; border: none; border-radius: 4px; cursor: pointer;">Edit</button>
-                    <button onclick="deleteProduct(${item.id}, '${escapeHtml(item.title).replace(/'/g, "\\'")}')" style="padding: 5px 10px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Hapus</button>
-                </div>
+            </div>
+            <div class="action-btns">
+                <button class="btn-icon edit" onclick="prepareEdit(${item.id})" title="Edit Parameter">✏️</button>
+                <button class="btn-icon delete" onclick="deleteDevice(${item.id}, '${escapeHtml(item.title).replace(/'/g, "\\'")}')" title="Hapus Perangkat">🗑️</button>
             </div>
         </div>
     `).join('');
@@ -155,17 +182,17 @@ function renderDOM() {
 // --- HELPER FORM & SECURITY ---
 function prepareEdit(id) {
     hideUIError();
-    const item = products.find(i => i.id === id);
+    const item = inventory.find(i => i.id === id);
     if (!item) return;
 
     editingId = id;
     nameInput.value = item.title;
     priceInput.value = item.price;
-    categoryInput.value = item.category || '';
+    categoryInput.value = item.category;
 
-    formTitle.textContent = "Edit Data Produk";
-    submitBtn.textContent = "Simpan Perubahan";
-    cancelBtn.style.display = "inline-block";
+    formTitle.textContent = "⚙️ Modifikasi Log Perangkat";
+    submitBtn.textContent = "Simpan Pembaruan";
+    cancelBtn.style.display = "block";
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -173,8 +200,8 @@ function prepareEdit(id) {
 function resetForm() {
     form.reset();
     editingId = null;
-    formTitle.textContent = "Tambah Produk Baru";
-    submitBtn.textContent = "Tambah Produk";
+    formTitle.textContent = "Tambahkan Gear Baru";
+    submitBtn.textContent = "Simpan Data";
     cancelBtn.style.display = "none";
 }
 
@@ -185,9 +212,7 @@ function escapeHtml(str) {
     })[match]);
 }
 
-// Event Listeners
+// --- EVENT LISTENERS ---
 form.addEventListener('submit', handleFormSubmit);
-if (cancelBtn) cancelBtn.addEventListener('click', () => { resetForm(); hideUIError(); });
-
-// Inisialisasi Aplikasi Sesuai Ketentuan D (async/await)
-document.addEventListener('DOMContentLoaded', fetchProducts);
+cancelBtn.addEventListener('click', () => { resetForm(); hideUIError(); });
+document.addEventListener('DOMContentLoaded', fetchDevices);
